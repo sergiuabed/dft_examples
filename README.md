@@ -154,3 +154,22 @@ Helper diagrams to be added here
 # Examples work in progress
 - [4. Gate-level Dft insertion](./)
 - [5. sub-block Dft insertion](./)
+
+# DfT on NVDLA Accelerator
+
+- [6.nvdla_edt_gate](6.nvdla_edt_gate/)
+
+This example shows how to insert DfT (EDT, OCC) in the NVDLA accelerator across all it partitions. The examples uses the nv_small 
+project. The synthesis and all DfT process has been implemented using the open source PDK from IHP. It is worth noting that the 
+NVDLA memories are treated as blackboxes as they are not available in the IHP PDK. 
+
+As the memoeries are not available the DfT does not incorporate MBIST.
+
+It is worth noting that some Scan Cells use some sort of clock gating or clock selection requiring the innsertion of custom DfT control points. In addition some cell instances connected to TIE0 or TIE1 are required to be defined as non-scan. 
+
+
+- [7.nvdla_edt_gate](7.nvdla_lbist_gate/)
+
+This example shows how to insert DfT (EDT, OCC, LBIST) in the NVDLA accelerator across all it partitions. The examples uses the nv_small  project. The synthesis and all DfT process has been implemented using the open source PDK from IHP. It is worth noting that the  NVDLA memories are treated as blackboxes as they are not available in the IHP PDK. 
+
+As the memoeries are not available the DfT does not incorporate MBIST.
