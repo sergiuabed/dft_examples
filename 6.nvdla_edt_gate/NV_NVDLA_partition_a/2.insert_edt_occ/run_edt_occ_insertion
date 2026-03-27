@@ -1,0 +1,132 @@
+#! /bin/sh -f
+#\
+mkdir -p logfiles; export PDK_ROOT_SYN="$(realpath "../../../tech/synopsys")"; echo $PDK_ROOT_SYN
+#\
+exec tessent -shell -log logfiles/$0.log -replace -dofile "$0"
+proc cleanup { {pathname_list ""}  } { 
+  file delete -force  simulation_outdir  ;
+  file delete -force  synthesis_outdir ;
+  foreach pathname $pathname_list { file delete -force $pathname  ; } ;
+ } 
+
+ cleanup ;
+
+set PDK_ROOT ../../../tech
+
+##Setting context to dft and  we are inserting DFT into rtl-level design
+set_context dft -no_rtl -design_id gate2
+
+##Setting where the tsdb_outdir is to be located, default is at the current working directory
+set_tsdb_output_directory ../tsdb_outdir
+
+# Read Tessent Library
+read_cell_library ${PDK_ROOT}/tessent/ihp-sg13g2_stdcell.tcelllib
+read_cell_library ${PDK_ROOT}/tessent/ihp-sg13g2_io.tcelllib
+
+##Read in the memory library model
+#set_design_sources -format tcd_memory -Y ${PDK_ROOT}/tessent/memories -extension tcd_memory
+
+##Read in memory verilog model
+#read_verilog ../../nv_small/outdir/nv_small/vmod/rams/model/RAMDP_16X272_GL_M1_E2.v -verbose -exclude_from_file_dictionary -interface_only
+#read_verilog ../../nv_small/outdir/nv_small/vmod/rams/model/RAMDP_16X256_GL_M1_E2.v -verbose -exclude_from_file_dictionary -interface_only
+
+##Read in the design
+#read_verilog ../../nv_small/nvdla-synth/net/NV_NVDLA_partition_a.gv -verbose
+read_verilog ../../nv_small/nvdla/net/NV_NVDLA_partition_a.gv -verbose
+
+##set design 
+set_current_design NV_NVDLA_partition_a
+
+report_black_boxes -undefined
+add_black_boxes -modules {\
+                        RAMDP_16X272_GL_M1_E2 \
+                        RAMDP_16X256_GL_M1_E2 \
+                        } 
+
+##Setting the design level as physical_block. Design does not has pads
+set_design_level physical_block
+
+add_dft_signals ltest_en 
+add_dft_signals scan_en edt_update test_clock -source_node { scan_enable edt_update test_clock }
+add_dft_signals edt_clock shift_capture_clock -create_from_other_signals
+
+add_dft_signals int_ltest_en ext_ltest_en int_mode ext_mode 
+#add_dft_signals tck_occ_en
+report_dft_signals
+
+
+set_dft_specification_requirements -logic_test on
+#add core instance sti sib which is going to use by NCP decoder to create cycle for mini occ
+#add_core_instances -instances [get_instances *_tessent_sib_sti_inst]
+add_clocks 0 nvdla_core_clk -period 10ns
+
+##Needed for MBIST
+
+#add_clocks 0 jtag_tck_i -period 10ns 
+add_dft_control_points \u_NV_NVDLA_cacc/u_slcg_cell_0/nvdla_core_clk_slcg_0/p_clkgate/qd  -dft_signal_source_name all_test
+add_dft_control_points \u_NV_NVDLA_cacc/u_slcg_op_2/nvdla_core_clk_slcg_0/p_clkgate/qd  -dft_signal_source_name all_test
+add_dft_control_points \u_NV_NVDLA_cacc/u_slcg_op_1/nvdla_core_clk_slcg_0/p_clkgate/qd  -dft_signal_source_name all_test
+add_dft_control_points \u_NV_NVDLA_cacc/u_slcg_op_0/nvdla_core_clk_slcg_0/p_clkgate/qd  -dft_signal_source_name all_test
+
+
+check_design_rules
+
+report_dft_control_points
+
+set spec [create_dft_specification -sri_sib_list { occ edt } ]
+
+read_config_data -in $spec -from_string {
+use_rtl_synchronizer_cell : on;
+}
+# add_persistent_buffers_in_scan_resource_instruments : on;
+# Use report_config_syntax DftSpecification/edt|occ to see full syntax
+report_config_data $spec
+
+read_config_data -in $spec -from_string {
+
+  OCC {
+    ijtag_host_interface : Sib(occ);
+    static_clock_control : both;
+    }
+}
+
+set id_clk_list [list \
+nvdla_core_clk nvdla_core_clk\
+]
+foreach {id clk} $id_clk_list {
+  set occ [add_config_element OCC/Controller($id) -in $spec]
+  set_config_value clock_intercept_node -in $occ $clk
+}
+
+
+read_config_data -in $spec -from_string {
+  EDT {
+    ijtag_host_interface : Sib(edt);
+    Controller (c1) {
+      longest_chain_range : 100, 200;
+      scan_chain_count : 200;
+      input_channel_count : 2;
+      output_channel_count : 2;
+    }
+  }
+}
+
+
+process_dft_specification
+## The icl for the entire design gets created
+extract_icl 
+run_synthesis
+# write script for design compilation
+write_design_import_script  for_dc_synthesis.tcl -replace
+
+# Make patterns
+create_pattern_specification
+process_pattern_specification
+## Run Simulations
+set_simulation_library_sources -v ${PDK_ROOT}/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v -v ${PDK_ROOT}/ihp-sg13g2/libs.ref/sg13g2_io/verilog/sg13g2_io.v -v ${PDK_ROOT}/ihp-sg13g2/libs.ref/sg13g2_sram/verilog/*.v -v ../../nv_small/outdir/nv_small/vmod/rams/model/RAMDP_16X272_GL_M1_E2.v -v ../../nv_small/outdir/nv_small/vmod/rams/model/RAMDP_16X256_GL_M1_E2.v
+
+run_testbench_simulations -compilation_options {verilog {+define+FUNCTIONAL}} -simulator_option +nowarnTSCALE
+check_testbench_simulations -report_status
+
+
+exit
