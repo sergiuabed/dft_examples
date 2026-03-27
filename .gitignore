@@ -7,6 +7,7 @@ synthesis_outdir/
 tsdb_outdir/
 croc/
 
+fault_list
 *.vg
 *.log
 *.svf
@@ -19,9 +20,14 @@ croc/
 *.list
 *.txt
 *.sdc
+*.tcd
 
 *.dc_shell_import_script
 *.merged_sdc
 run_fsim-
 run_clk_domains
+nv_small
+
+//xbound_*
+
 
