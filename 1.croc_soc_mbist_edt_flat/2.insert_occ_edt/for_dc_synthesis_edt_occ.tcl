@@ -43,7 +43,7 @@ analyze -format sverilog -library work \
       "../croc/rtl/common_cells/passthrough_stream_fifo.sv" \
       "../croc/rtl/common_cells/popcount.sv" \
       "../croc/rtl/common_cells/rr_arb_tree.sv" \
-      "../tsdb_outdir/dft_inserted_designs/croc_chip_rtl2.dft_inserted_design/modified_rtl_files/croc/rtl/common_cells/rstgen_bypass.sv" \
+      "../tsdb_outdir/dft_inserted_designs/croc_chip_rtl2.dft_inserted_design/modified_rtl_files/rstgen_bypass.sv" \
       "../croc/rtl/common_cells/serial_deglitch.sv" \
       "../croc/rtl/common_cells/shift_reg.sv" \
       "../croc/rtl/common_cells/shift_reg_gated.sv" \
@@ -76,7 +76,7 @@ analyze -format sverilog -library work \
       "../croc/rtl/common_cells/edge_detect.sv" \
       "../croc/rtl/common_cells/lzc.sv" \
       "../croc/rtl/common_cells/max_counter.sv" \
-      "../tsdb_outdir/dft_inserted_designs/croc_chip_rtl2.dft_inserted_design/modified_rtl_files/croc/rtl/common_cells/rstgen.sv" \
+      "../tsdb_outdir/dft_inserted_designs/croc_chip_rtl2.dft_inserted_design/modified_rtl_files/rstgen.sv" \
       "../croc/rtl/common_cells/spill_register.sv" \
       "../croc/rtl/common_cells/stream_delay.sv" \
       "../croc/rtl/common_cells/stream_fifo.sv" \
@@ -164,7 +164,7 @@ analyze -format sverilog -library work \
       "../croc/rtl/timer_unit/apb_timer_unit.sv" \
       "../croc/rtl/timer_unit/timer_unit.sv" \
       "../croc/ihp13/tc_clk.sv" \
-      "../tsdb_outdir/dft_inserted_designs/croc_chip_rtl1.dft_inserted_design/modified_rtl_files/ihp13/tc_sram_impl.sv" \
+      "../tsdb_outdir/dft_inserted_designs/croc_chip_rtl1.dft_inserted_design/modified_rtl_files/tc_sram_impl.sv" \
       "../croc/rtl/croc_pkg.sv" \
       "../croc/rtl/user_pkg.sv" \
       "../croc/rtl/soc_ctrl/soc_ctrl_reg_pkg.sv" \
@@ -173,10 +173,10 @@ analyze -format sverilog -library work \
       "../croc/rtl/soc_ctrl/soc_ctrl_reg_top.sv" \
       "../croc/rtl/gpio/gpio_reg_top.sv" \
       "../croc/rtl/gpio/gpio.sv" \
-      "../tsdb_outdir/dft_inserted_designs/croc_chip_rtl1.dft_inserted_design/modified_rtl_files/rtl/croc_domain.sv" \
+      "../tsdb_outdir/dft_inserted_designs/croc_chip_rtl1.dft_inserted_design/modified_rtl_files/croc_domain.sv" \
       "../croc/rtl/user_domain.sv" \
-      "../tsdb_outdir/dft_inserted_designs/croc_chip_rtl2.dft_inserted_design/modified_rtl_files/tsdb_outdir/dft_inserted_designs/croc_chip_rtl1.dft_inserted_design/modified_rtl_files/rtl/croc_soc.sv" \
-      "../tsdb_outdir/dft_inserted_designs/croc_chip_rtl2.dft_inserted_design/modified_rtl_files/tsdb_outdir/dft_inserted_designs/croc_chip_rtl1.dft_inserted_design/modified_rtl_files/rtl/croc_chip.sv" \
+      "../tsdb_outdir/dft_inserted_designs/croc_chip_rtl2.dft_inserted_design/modified_rtl_files/croc_soc.sv" \
+      "../tsdb_outdir/dft_inserted_designs/croc_chip_rtl2.dft_inserted_design/modified_rtl_files/croc_chip.sv" \
    } 
 
 analyze -format verilog -library work { \
