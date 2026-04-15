@@ -110,7 +110,7 @@ def main():
 
     input_channel_count = args.input_channel_count
     output_channel_count = args.output_channel_count
-    longest_chain_range = [int(i) for i in args.longest_chain_range[1:-1].split(',')]
+    longest_chain_range = [int(i) for i in args.longest_chain_range.split('_')]
     scan_chain_count = args.scan_chain_count
 
     update_run_insert_bscan_mbist(filepath_step1, input_channel_count, output_channel_count)
