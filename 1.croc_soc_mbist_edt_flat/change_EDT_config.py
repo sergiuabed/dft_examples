@@ -1,4 +1,13 @@
 import os
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--input_channel_count", type=int)
+parser.add_argument("--output_channel_count", type=int)
+parser.add_argument("--longest_chain_range", type=str)
+parser.add_argument("--scan_chain_count", type=int)
+
+args = parser.parse_args()
 
 def update_croc_chip(filepath, filepath_template, input_channel_count, output_channel_count):
         with open(filepath_template, 'r') as template, open(filepath, 'w') as outfile:
@@ -97,10 +106,12 @@ def main():
     filepath_croc_chip = './croc/rtl/croc_chip.sv'
     filepath_croc_chipTemplate = './croc_chip.svTEMPLATE'
 
-    input_channel_count = 3
-    output_channel_count = 3
-    longest_chain_range = [65, 100]
-    scan_chain_count = 100
+    print(args)
+
+    input_channel_count = args.input_channel_count
+    output_channel_count = args.output_channel_count
+    longest_chain_range = [int(i) for i in args.longest_chain_range[1:-1].split(',')]
+    scan_chain_count = args.scan_chain_count
 
     update_run_insert_bscan_mbist(filepath_step1, input_channel_count, output_channel_count)
     update_run_insert_occ_edt(filepath_step2, longest_chain_range, scan_chain_count, input_channel_count, output_channel_count)
